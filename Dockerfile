@@ -12,8 +12,8 @@ RUN pip install -r requirements.txt
 
 COPY bot ./bot
 
-# SQLite lives on a Railway Volume mounted at /data (set DB_PATH=/data/leads.db)
+# SQLite lives on a Railway Volume attached in the Railway UI at /data
+# (set DB_PATH=/data/leads.db). Railway does not allow a VOLUME instruction here.
 RUN mkdir -p /data
-VOLUME ["/data"]
 
 CMD ["python", "-m", "bot.main"]
