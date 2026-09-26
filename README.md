@@ -86,8 +86,30 @@ bot/
   config.py     environment settings
 ```
 
+## Deploy on Railway
+
+The repo contains a `Dockerfile` and `railway.json`, so Railway builds it with no
+extra configuration. The bot is a background worker with no HTTP port.
+
+1. Push this repo to GitHub.
+2. Railway: **New Project → Deploy from GitHub repo**, pick the repo.
+3. **Variables** tab: add `TELEGRAM_BOT_TOKEN`, `GOOGLE_PLACES_API_KEY`,
+   `GEMINI_API_KEY` (or `ANTHROPIC_API_KEY`), `ALLOWED_USER_IDS`, `AGENCY_NAME`,
+   and `DB_PATH=/data/leads.db`.
+4. **Settings → Volumes → Add Volume**, mount path `/data`. Without this the
+   SQLite cache, saved leads and user keys are lost on every redeploy.
+5. Deploy. The **Logs** tab should show `Run polling for bot @...`.
+
 ## Next steps
 
 - Add SMTP email sending with a review step, once the domain has SPF, DKIM and DMARC.
 - Export saved leads to CSV or Google Sheets.
 - Add a "skip businesses I already contacted" filter.
+
+## Contact
+
+Built by Susanta Sahoo. Reach out for collaboration, custom bots, or agency work.
+
+- Website: https://iamsusantasahoo.github.io/
+- Email: sahoosusantaku2@gmail.com
+- Phone / WhatsApp: +91 99376 81391
