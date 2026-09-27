@@ -112,6 +112,7 @@ async def enrich_place(place: Place, client: httpx.AsyncClient) -> Place:
     socials: dict[str, str] = {}
 
     home = await _fetch(client, place.website)
+    place.website_ok = home is not None
     if home:
         _extract(home, place.website, emails, socials)
         # Only visit a contact page when the homepage gave us no email

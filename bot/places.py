@@ -54,6 +54,7 @@ class Place:
     # Filled by enrichment
     emails: list[str] = field(default_factory=list)
     socials: dict[str, str] = field(default_factory=dict)
+    website_ok: bool = True   # False when the listed website did not respond
     enriched: bool = False
 
     def to_dict(self) -> dict[str, Any]:

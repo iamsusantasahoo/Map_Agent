@@ -224,9 +224,22 @@ async def send_drafts(message: Message, user_id: int) -> None:
     start = session.get("current_start", 1)
     provider, key = resolve_provider(user_id)
     label = {"anthropic": "Claude", "gemini": "Gemini", "template": "built-in templates"}[provider]
-    status = await message.answer(f"✍️ Writing {len(places)} messages with {label}…")
+    note = ""
+    if provider == "gemini" and len(places) > 5:
+        note = "\nFree Gemini keys allow 5 messages per minute, so this may take a couple of minutes."
+    status = await message.answer(f"✍️ Writing {len(places)} messages with {label}…{note}")
 
-    drafts = await asyncio.gather(*(drafter.draft(p, provider, key) for p in places))
+    last_edit = 0.0
+
+    async def progress(done: int, total: int) -> None:
+        nonlocal last_edit
+        now = asyncio.get_event_loop().time()
+        if done < total and now - last_edit < 4:
+            return
+        last_edit = now
+        await status.edit_text(f"✍️ Writing messages with {label}… {done}/{total} done{note}")
+
+    drafts = await drafter.draft_all(places, provider, key, on_progress=progress)
     await status.delete()
 
     per = settings.results_per_message
@@ -237,7 +250,9 @@ async def send_drafts(message: Message, user_id: int) -> None:
             + "\n\n".join(format_draft(start + i + j, p, d) for j, (p, d) in enumerate(chunk))
         )
         await message.answer(text, disable_web_page_preview=True)
-    if provider == "template":
+    if drafter.notice:
+        await message.answer("⚠️ " + drafter.notice)
+    elif provider == "template":
         await message.answer(
             "These are template drafts. For personalised AI drafts, add a key with "
             "<code>/setkey gemini YOUR_KEY</code> or <code>/setkey anthropic YOUR_KEY</code>."

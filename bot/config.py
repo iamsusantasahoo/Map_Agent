@@ -23,7 +23,7 @@ class Settings:
     anthropic_api_key: str = os.getenv("ANTHROPIC_API_KEY", "").strip()
     gemini_api_key: str = os.getenv("GEMINI_API_KEY", "").strip()
     anthropic_model: str = os.getenv("ANTHROPIC_MODEL", "claude-opus-5").strip()
-    gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash").strip()
+    gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-3.8-flash").strip()
     default_provider: str = os.getenv("DEFAULT_AI_PROVIDER", "auto").strip().lower()
 
     allowed_user_ids: frozenset[int] = field(
